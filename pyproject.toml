@@ -2,7 +2,7 @@
 name = "hw11"
 version = "0.1.0"
 description = ""
-authors = ["PollyK21 <pol.kulish@gmail.com>"]
+authors = ["Vitalii-Mykhalchenko <swimming580@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -23,8 +23,17 @@ pydantic-settings = "^2.2.1"
 fastapi-limiter = "^0.1.6"
 cloudinary = "^1.40.0"
 python-dotenv = "^1.0.1"
+sphinx = "^7.3.7"
+pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
 
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^7.3.7"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

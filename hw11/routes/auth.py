@@ -44,6 +44,16 @@ security = HTTPBearer()
 
 @router.get('/refresh_token', response_model=TokenModel)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+    """
+    Endpoint to refresh access token using refresh token.
+
+    Args:
+    credentials (HTTPAuthorizationCredentials): HTTP Authorization credentials containing refresh token.
+    db (Session): Database session.
+
+    Returns:
+    TokenModel: Response containing new access token and refresh token.
+    """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repository_users.get_user_by_email(email, db)
@@ -60,6 +70,18 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
+    """
+    Endpoint for user registration.
+
+    Args:
+    body (UserModel): User details.
+    background_tasks (BackgroundTasks): Background tasks for sending email confirmation.
+    request (Request): FastAPI request object.
+    db (Session): Database session.
+
+    Returns:
+    UserResponse: Response containing newly created user information.
+    """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
@@ -73,6 +95,16 @@ async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Re
 
 @router.post("/login", response_model=TokenModel)
 async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    Endpoint for user login.
+
+    Args:
+    body (OAuth2PasswordRequestForm): Form containing user login credentials.
+    db (Session): Database session.
+
+    Returns:
+    TokenModel: Response containing access token and refresh token.
+    """
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
         raise HTTPException(
@@ -92,6 +124,16 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
 
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+    Endpoint to confirm user's email address.
+
+    Args:
+    token (str): Token sent to user's email for confirmation.
+    db (Session): Database session.
+
+    Returns:
+    dict: Confirmation message.
+    """
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
@@ -106,6 +148,18 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
 @router.post('/request_email')
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
+    """
+    Endpoint to request email confirmation.
+
+    Args:
+    body (RequestEmail): Request body containing email address.
+    background_tasks (BackgroundTasks): Background tasks for sending email confirmation.
+    request (Request): FastAPI request object.
+    db (Session): Database session.
+
+    Returns:
+    dict: Confirmation message.
+    """
     user = await repository_users.get_user_by_email(body.email, db)
 
     if user.confirmed:

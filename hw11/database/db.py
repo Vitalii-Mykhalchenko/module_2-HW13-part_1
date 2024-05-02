@@ -11,6 +11,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Dependency
 def get_db():
+    """
+    Function to retrieve a database session object.
+
+    Returns:
+    session: Database session object created based on the local session.
+    """
     db = SessionLocal()
     try:
         yield db
